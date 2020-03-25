@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Ember Run Loop Demo</title>
+    <style>
+      html, body {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        font-size: 14px;
+        font-family: sans-serif;
+      }
+      h1 {
+        margin-bottom: 30px;
+        font-weight: normal; 
+      }
+      h2 {
+        font-size: 18px;
+        color: #9c4304;
+        font-weight: normal; 
+      }
+      a {
+        text-decoration: none;
+        font-size: 12px;
+        color: #fff;
+        padding: 4px 8px;
+        border-radius: 4px;
+        background: #dc614e;
+      }
+      a:hover {
+        background: #b74230;
+      }
+      .container {
+        display: flex;
+        flex-direction: row;
+        flex: 1 0 auto;
+        height: 100%;
+      }
+      .container > section {
+        flex: 1 0 auto;
+        height: 100%;
+        width: 50%;
+      }
+      section.details {
+        background-color: #ffedd2;
+        padding: 16px;
+        box-sizing: border-box;
+      }
+      section.renderer {
+        display: flex;
+        flex-direction: column;
+      }
+      .renderer-box {
+        flex: 1 0 auto;
+        margin: 0;
+        padding: 8px;
+        box-sizing: border-box;
+        word-break: break-all;
+        word-wrap: break-word;
+      }
+      .renderer-box.code {
+        background: #2d2d2d;
+        color: #ccc;
+        white-space: pre-wrap;
+        line-height: 1.4;
+        max-height: 70%;
+        overflow-y: scroll;
+      }
+      .renderer-box.log {
+        background-color: #000;
+        color: #18ec6d;
+      }
+
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <section class="details">
+        <h1>Demo - Run Loop</h1>
+        <section>
+          <h2>Priority Queue</h2>
+          <p>
+            As you can see in the example code, the schedule is set in random order, but during the exectution
+            it will take the priority order as in Run Loop. The priority order is as follows
+            <ol>
+              <li>actions</li>
+              <li>routerTransitions</li>
+              <li>render</li>
+              <li>afterRender</li>
+              <li>destroy</li>
+            </ol>
+          </p>
+          <a href="/index.html?demo=1">Demo 1</a>
+        </section>
+        <section>
+          <h2>Schedule Once</h2>
+          <p>
+            <ol>
+              <li>Schedules a function to run one time in a given queue of the current RunLoop.</li>
+              <li>Calling this method with the same queue/target/method combination will have no effect (past the initial call)</li>
+              <li>New arguments will replace previous calls.</li>
+            </ol>
+          </p>
+          <a href="/index.html?demo=2">Demo 2</a>
+        </section>
+        <section>
+          <h2>SetTimeout vs Later</h2>
+          <p>
+            <ol>
+              <li>Schedules a function to run one time in a given queue of the current RunLoop.</li>
+              <li>Calling this method with the same queue/target/method combination will have no effect (past the initial call)</li>
+              <li>New arguments will replace previous calls.</li>
+            </ol>
+          </p>
+          <a href="/index.html?demo=3">Demo 3</a>
+        </section>
+      </section>
+      <section class="renderer">
+        <div class="renderer-box code" id="code"></div>
+        <div class="renderer-box output" id="output"></div>
+        <div class="renderer-box log" id="log"></div>
+      </section>
+    </div>
+
+    <script type="module" src="http://builds.emberjs.com.s3.amazonaws.com/backburner.js/lastest/backburner.js"></script>
+    <script type="module">
+      // import Backburner from './dist/es6/backburner.js';
+      import Logger from './demo/logger.js';
+      import Demos from './demo/index.js';
+      var backburner = new Backburner(['actions', 'routerTransitions', 'render', 'afterRender', 'destroy']);
+      var logger = new Logger();
+      var urlParams = new URLSearchParams(window.location.search);
+      var demoNb = urlParams.get('demo') || 1;
+      var demo = new Demos['Demo' + demoNb]();
+      demo.perform(backburner, logger);
+      demo.code();
+    </script>
+  </body>
+</html>

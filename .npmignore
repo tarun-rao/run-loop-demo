@@ -1,0 +1,14 @@
+.DS_Store
+node_modules/
+bower_components/
+/tmp/
+ember-cli-build.js
+testem.json
+TODOs
+/bin/
+/config/
+/lib/
+tests/
+.travis.yml
+.npmignore
+.gitignore
