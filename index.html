@@ -116,26 +116,62 @@
           </p>
           <a href="/index.html?demo=3">Demo 3</a>
         </section>
+        <section>
+          <h2>Inject on Run Loop</h2>
+          <p>
+            <ol>
+              <li>Schedules a function to run one time in a given queue of the current RunLoop.</li>
+              <li>Calling this method with the same queue/target/method combination will have no effect (past the initial call)</li>
+              <li>New arguments will replace previous calls.</li>
+            </ol>
+          </p>
+          <a href="/index.html?demo=4">Demo 4</a>
+        </section>
       </section>
       <section class="renderer">
         <div class="renderer-box code" id="code"></div>
-        <div class="renderer-box output" id="output"></div>
+        <div class="renderer-box" class="output">
+          <div id="action"></div>
+          <div class="stats">
+            <div data-id="actions"></div>
+            <div data-id="routerTransitions"></div>
+            <div data-id="render"></div>
+            <div data-id="afterRender"></div>
+            <div data-id="destroy"></div>
+          </div>
+          <div id="output"></div>
+        </div>
         <div class="renderer-box log" id="log"></div>
       </section>
     </div>
 
-    <script type="module" src="http://builds.emberjs.com.s3.amazonaws.com/backburner.js/lastest/backburner.js"></script>
     <script type="module">
-      // import Backburner from './dist/es6/backburner.js';
+      import Backburner from './dist/es6/backburner.js';
       import Logger from './demo/logger.js';
       import Demos from './demo/index.js';
       var backburner = new Backburner(['actions', 'routerTransitions', 'render', 'afterRender', 'destroy']);
+      backburner.DEBUG = true;
+      console.log(backburner.getDebugInfo());
+
       var logger = new Logger();
       var urlParams = new URLSearchParams(window.location.search);
       var demoNb = urlParams.get('demo') || 1;
       var demo = new Demos['Demo' + demoNb]();
       demo.perform(backburner, logger);
       demo.code();
+
+      backburner.on('begin', onBegin);
+      backburner.on('end', onEnd);
+      function onBegin(curr, prev) {
+        console.log(JSON.stringify(prev));
+        let tpl = '';
+        curr.queueNames.forEach((queueName) => {
+          tpl += '<div>'
+        });
+      }
+      function onEnd(curr, next) {
+        console.log(JSON.stringify(curr));
+      }
     </script>
   </body>
 </html>
