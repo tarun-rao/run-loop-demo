@@ -34,14 +34,13 @@ export default class Demo2 {
     document.querySelector('#code').innerHTML = `
       function scheduleSameContext(name) {
         person.name = name;
-        backburner.scheduleOnce('render same context', render);
+        backburner.scheduleOnce('render', render);
       }
 
       function scheduleDiffContext(name) {
-        person.name = name;
         backburner.scheduleOnce('render', function() {
           logger.log('render diff context', ++renderDiffCount);
-          document.querySelector('#output').innerHTML += person.name;
+          document.querySelector('#output').innerHTML += name;
         });
       }
 
@@ -49,8 +48,8 @@ export default class Demo2 {
         scheduleSameContext('Adam');
         scheduleSameContext('Eve');
 
-        scheduleDiffContext('Adam');
-        scheduleDiffContext('Even');
+        scheduleDiffContext('Tom');
+        scheduleDiffContext('Rob');
       });
     `;
   }

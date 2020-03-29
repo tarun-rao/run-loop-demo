@@ -33,19 +33,19 @@ export default class Demo3 {
         logger.log('render', ++renderCount);
         document.querySelector('#output').innerHTML = person.name;
       }
-  
+
       function scheduleOnce(name) {
         person.name = name;
         backburner.scheduleOnce('render', render);
       }
-  
+
       function scheduleLater(name) {
         backburner.later('render', function() {
           person.name = name;
-          render();
+          backburner.scheduleOnce('render', render);
         }, delayTime);
       }
-  
+
       backburner.run(function() {
         scheduleOnce('Adam');
         scheduleLater('Eve');
