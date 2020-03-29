@@ -46,6 +46,10 @@
         background-color: #ffedd2;
         padding: 16px;
         box-sizing: border-box;
+        overflow-y: scroll;
+      }
+      section.details > section {
+        margin-bottom: 30px;
       }
       section.renderer {
         display: flex;
@@ -106,18 +110,32 @@
           <a href="/index.html?demo=2">Demo 2</a>
         </section>
         <section>
-          <h2>SetTimeout vs Later</h2>
+          <h2>Later</h2>
           <p>
+            In the example, Adam & Jhon prints immediately by rendering once, and followed by Eve being rendered after 2 seconds.
             <ol>
-              <li>Schedules a function to run one time in a given queue of the current RunLoop.</li>
-              <li>Calling this method with the same queue/target/method combination will have no effect (past the initial call)</li>
-              <li>New arguments will replace previous calls.</li>
+              <li>Invokes the passed method after a specified period of time.</li>
+              <li>The last parameter of this method must always be a number of milliseconds (wait time)</li>
+              <li>To be used instead of setTimeOut()</li>
+              <li>This will ensure that items that expire during the same script execution cycle all execute together, which is often more efficient than using a real setTimeout</li>
             </ol>
           </p>
           <a href="/index.html?demo=3">Demo 3</a>
         </section>
         <section>
-          <h2>Inject on Run Loop</h2>
+          <h2>SetTimeout vs Later</h2>
+          <p>
+            <ol>
+              <li>Since setTimeout renders twice</li>
+              <li>As you can see, it has rendered only once instead of twice. Since, the delaytime out is set to be the same, the queue is updated in the same
+                runloop execution cycle. If the delay time is set as different, you may notice it being rendered multiple times.
+              </li>
+            </ol>
+          </p>
+          <a href="/index.html?demo=4">Demo 4</a>
+        </section>
+        <section>
+          <h2>Run Loop - Step By Step</h2>
           <p>
             <ol>
               <li>Schedules a function to run one time in a given queue of the current RunLoop.</li>
@@ -125,7 +143,7 @@
               <li>New arguments will replace previous calls.</li>
             </ol>
           </p>
-          <a href="/index.html?demo=4">Demo 4</a>
+          <a href="/index.html?demo=5">Demo 5</a>
         </section>
       </section>
       <section class="renderer">
