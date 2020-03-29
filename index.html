@@ -132,12 +132,33 @@
         <div class="renderer-box code" id="code"></div>
         <div class="renderer-box" class="output">
           <div id="action"></div>
+          <style>
+            .stats {
+              display: flex;
+              flex-direction: row;
+              flex-wrap: nowrap;
+            }
+            .stats > div {
+              display: flex;
+              flex-direction: column;
+              align-items: flex-start;
+              border: 1px solid #ccc;
+              width: 40px;
+              min-height: 22px;
+            }
+            .stats > div > div {
+              border: 1px solid #ffffff;
+              background: #fbd9b7;
+              width: 40px;
+              height: 20px;
+            }
+          </style>
           <div class="stats">
-            <div data-id="actions"></div>
-            <div data-id="routerTransitions"></div>
-            <div data-id="render"></div>
-            <div data-id="afterRender"></div>
-            <div data-id="destroy"></div>
+            <div id="stat-actions"></div>
+            <div id="stat-routerTransitions"></div>
+            <div id="stat-render"></div>
+            <div id="stat-afterRender"></div>
+            <div id="stat-destroy"></div>
           </div>
           <div id="output"></div>
         </div>

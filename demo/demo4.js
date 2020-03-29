@@ -1,5 +1,12 @@
 export default class Demo4 {
-  count = 0;
+  queues = {
+    actions: 1,
+    routerTransitions: 2,
+    render: 1,
+    afterRender: 4,
+    destroy: 1
+  }
+  queueBtns = {};
   perform(backburner, logger) {
     var actionCount = 0;
     var renderCount = 0;
@@ -12,58 +19,83 @@ export default class Demo4 {
     this._createActions();
 
     // Handlers
-    function actions() {
-      backburner.later(() => {
-        logger.log('actions', ++actionCount);
-      }, 5000);
+    function scheduleActions() {
+      logger.log('actions', ++actionCount);
     }
 
-    function routerTransitions() {
+    function scheduleRouterTransitions() {
       logger.log('routerTransitions', ++routerTransitionCount);
     }
 
-    function render() {
+    function scheduleRender() {
       logger.log('render', ++renderCount);
       document.querySelector('#output').innerHTML = person.name;
     }
 
-    function afterRender() {
+    function scheduleAfterRender() {
       logger.log('afterRender', ++afterRenderCount);
     }
 
-    function destroy() {
+    function scheduleDestroy() {
       logger.log('destroy', ++destroyCount);
     }
 
-    // Setters
-    function setActions() {
-      backburner.schedule('actions', actions);
+    // flush
+    var _this = this;
+    function flush(type) {
+      backburner.later(function() {
+        logger.log('flushed queue items', _this.queues[type]);
+        _this.queues[type] = 0;
+        _this.queueBtns[type].disabled = true;
+        _this._drawStats();
+      });
     }
 
-    function setRouterTransitions() {
-      backburner.schedule('routerTransitions', routerTransitions);
+    // Schedulers
+    function setActions({ actions }) {
+      for (let i = 0; i < actions; i++) {
+        backburner.scheduleOnce('actions', scheduleActions);
+      }
+      flush('actions');
     }
 
-    function setRender() {
-      backburner.schedule('render', render);
+    function setRouterTransitions({ routerTransitions }) {
+      for (let i = 0; i < routerTransitions; i++) {
+        backburner.scheduleOnce('routerTransitions', scheduleRouterTransitions);
+      }
+      flush('routerTransitions');
+    }
+
+    function setRender({ render }) {
+      for (let i = 0; i < render; i++) {
+        backburner.scheduleOnce('render', scheduleRender);
+      }
+      flush('render');
     }
     
-    function setAfterRender() {
-      backburner.schedule('afterRender', afterRender);
+    function setAfterRender({ afterRender }) {
+      for (let i = 0; i < afterRender; i++) {
+        backburner.scheduleOnce('afterRender', scheduleAfterRender);
+      }
+      flush('afterRender');
     }
 
-    function setDestroy() {
-      backburner.schedule('destroy', destroy);
+    function setDestroy(destroy) {
+      for (let i = 0; i < destroy; i++) {
+        backburner.scheduleOnce('destroy', scheduleDestroy);
+      }
+      flush('destroy');
     }
 
     // Init
     backburner.run(() => {
-      function* makeIterator() {  
-        yield setActions();
-        yield setRouterTransitions();
-        yield setRender();
-        yield setAfterRender();
-        yield setDestroy();
+
+      function* makeIterator() { 
+        yield setActions;
+        yield setRouterTransitions;
+        yield setRender;
+        yield setAfterRender;
+        yield setDestroy;
       };
 
       this.gen = makeIterator();
@@ -71,32 +103,49 @@ export default class Demo4 {
   }
 
   _createActions() {
-    var actionEl = document.querySelector('#action');
-    var nextBtn = document.createElement('button');
+    let actionEl = document.querySelector('#action');
+    let nextBtn = document.createElement('button');
     nextBtn.innerText = 'Next';
     actionEl.append(nextBtn);
 
     // events
     nextBtn.addEventListener('click', (e) => {
       e.stopPropagation();
-      this.gen.next();
+      console.log(this.queues);
+      this.gen.next().value(this.queues);
     });
+
+    // queue buttons
+    Object.keys(this.queues).forEach((queue) => {
+      var btn = document.createElement('button');
+      btn.innerHTML = `+1 ${queue}`;
+      btn.id = queue;
+      this.queueBtns[queue] = btn;
+      actionEl.append(btn);
+
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        this.queues[e.target.id]++;
+        this._drawStats();
+      });
+    });
+
+    // stats
+    this._drawStats();
+  }
+
+  _drawStats() {
+    var container;
+    for (let queue in this.queues) {
+      container = document.querySelector(`#stat-${queue}`);
+      container.innerHTML = '';
+      for (let i = 0; i < this.queues[queue]; i++) {
+        container.append(document.createElement('div'));
+      }
+    };
   }
 
   code() {
-    document.querySelector('#code').innerHTML = `
-      function setName(name) {
-        person.name = name;
-        backburner.schedule('destroy', destroy);
-        backburner.schedule('routerTransitions', routerTransitions);
-        backburner.schedule('render', render);
-        backburner.schedule('actions', actions);
-        backburner.schedule('afterRender', afterRender);
-      }
-
-      backburner.run(function() {
-        setName('Kris');
-      });
-    `;
+    document.querySelector('#code').innerHTML = '';
   }
 };
